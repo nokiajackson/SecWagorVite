@@ -34,6 +34,11 @@
 <script>
 import axios from "axios";
 
+//const apiClient = axios.create({
+//  baseURL: import.meta.env.VITE_API_BASE_URL,
+//});
+//console.log(import.meta.env.VITE_API_BASE_URL)
+
 export default {
   data() {
     return {
@@ -51,10 +56,14 @@ export default {
   },
   methods: {
     getCampuses() {
-      fetch("/Api/Account/GetAllCampuses")
-        .then((response) => response.json())
-        .then((data) => (this.campuses = data))
-        .catch((error) => console.error("Error fetching campuses:", error));
+        apiClient.get('/Api/Account/GetAllCampuses')
+        .then((res) => {
+            console.log(res.data)
+            this.campuses = res.data;
+        })
+        .catch((error) => {
+            console.error('Error fetching campuses:', error);
+        });
     },
     login() {
       if (
