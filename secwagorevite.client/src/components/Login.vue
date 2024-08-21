@@ -17,8 +17,8 @@
       </div>
       <div class="form-group">
         <label for="campusDropdown">Campus</label>
-        <select class="form-select" id="campusDropdown" v-model="datas.campus">
-          <option v-for="campus in campuses" :value="campus.id">
+        <select class="form-control" id="campusDropdown" v-model="datas.campus">
+          <option v-for="campus in campuses" :key="campus" :value="campus.id">
             {{ campus.campusName }}
           </option>
         </select>
@@ -32,12 +32,6 @@
 </template>
 
 <script>
-import axios from "axios";
-
-//const apiClient = axios.create({
-//  baseURL: import.meta.env.VITE_API_BASE_URL,
-//});
-//console.log(import.meta.env.VITE_API_BASE_URL)
 
 export default {
   data() {
@@ -49,6 +43,7 @@ export default {
       },
       campuses: [],
       errorMessage: "",
+      token:null,
     };
   },
   mounted() {
@@ -56,9 +51,8 @@ export default {
   },
   methods: {
     getCampuses() {
-        apiClient.get('/Api/Account/GetAllCampuses')
+        this.$apiClient.get('/Api/Account/GetAllCampuses')
         .then((res) => {
-            console.log(res.data)
             this.campuses = res.data;
         })
         .catch((error) => {
@@ -74,14 +68,16 @@ export default {
         this.errorMessage = "Please fill in all fields.";
       } else {
         this.errorMessage = "";
-        const csrfToken = document.querySelector(
-          '[name="__RequestVerificationToken"]'
-        ).value;
-        axios
+        // const csrfToken = document.querySelector(
+        //   '[name="__RequestVerificationToken"]'
+        // ).value;
+console.log(this.getAntiForgeryToken());
+
+        this.$apiClient
           .post("/Api/Account/Login", this.datas, {
             headers: {
               "Content-Type": "application/json",
-              RequestVerificationToken: csrfToken,
+              RequestVerificationToken: this.getAntiForgeryToken(),
             },
           })
           .then((response) => {
@@ -97,6 +93,10 @@ export default {
           });
       }
     },
+    async getAntiForgeryToken() {
+      const response =  await this.$apiClient.get('/Api/Account/GetAntiForgeryToken');
+      return response.data.token;
+    }
   },
 };
 </script>

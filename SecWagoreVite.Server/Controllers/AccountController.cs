@@ -9,6 +9,7 @@ using Swashbuckle.AspNetCore;
 using System.Reflection;
 using System.Security.Claims;
 using System.Data.Entity.Infrastructure;
+using Microsoft.AspNetCore.Antiforgery;
 
 
 [Route("Api/[controller]")]
@@ -17,18 +18,27 @@ public class AccountController : Controller
 {
     private readonly AccountService _accountService;
     CommonService _commonService;
+    private readonly IAntiforgery _antiforgery;
+
 
 
     public AccountController(
         AccountService accountService,
-        CommonService commonService
+        CommonService commonService,
+        IAntiforgery antiforgery
         )
     {
         _accountService = accountService;
         _commonService = commonService;
-
+        _antiforgery = antiforgery;
     }
 
+    [HttpGet("GetAntiForgeryToken")]
+    public IActionResult GetAntiForgeryToken()
+    {
+        var tokens = _antiforgery.GetAndStoreTokens(HttpContext);
+        return Ok(new { token = tokens.RequestToken });
+    }
     /// <summary>
     /// Get all campuses.
     /// </summary>
@@ -72,7 +82,6 @@ public class AccountController : Controller
     }
 
     [HttpPost("login")]
-    //[SwaggerResponse(200, type: typeof(Result<IActionResult>))]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Login(LoginModelVM model)
     {

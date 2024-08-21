@@ -3,6 +3,7 @@ import Login from '@/components/Login.vue';
 import MainLayout from '@/components/MainLayout.vue';
 import EntryRecordBefore from '@/components/EntryRecordBefore.vue';
 import EntryRecordAfter from '@/components/EntryRecordAfter.vue';
+import HelloWorld from '@/components/HelloWorld.vue';
 
 const routes = [
   {
@@ -30,6 +31,11 @@ const routes = [
     path: '/entryrecord',
     name: 'EntryRecordBefore',
     component: EntryRecordBefore,
+  },
+  {
+    path: '/helloWorld',
+    name: 'HelloWorld',
+    component: HelloWorld,
   },
 ];
 

@@ -5,6 +5,17 @@ using SecWagoreVite.Server.Service;
 
 var builder = WebApplication.CreateBuilder(args);
 
+var frontendUrl = Environment.GetEnvironmentVariable("FRONTEND_URL") ?? "https://localhost:5173"; // Default value
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowSpecificOrigin",
+        builder => builder.WithOrigins(frontendUrl)
+                          .AllowAnyHeader()
+                          .AllowAnyMethod()
+                          .AllowCredentials());
+});
+
 // °t¸m¤é»x
 builder.Logging.AddConsole();
 builder.Logging.AddDebug();
@@ -73,11 +84,9 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
 app.UseHttpsRedirection();
-
+app.UseCors("AllowSpecificOrigin");
 app.UseAuthorization();
-
 app.MapControllers();
 
 app.MapFallbackToFile("/index.html");
